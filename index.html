@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AutoSalon</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{--bg:var(--tg-theme-bg-color,#0f1218);--card:var(--tg-theme-secondary-bg-color,#1a1f2b);--tx:var(--tg-theme-text-color,#f2f4f8);--hint:var(--tg-theme-hint-color,#8b93a7);--ac:var(--tg-theme-button-color,#3b82f6);--act:var(--tg-theme-button-text-color,#fff)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding-bottom:80px}
+header{position:sticky;top:0;z-index:5;background:var(--bg);padding:12px 14px 8px;display:flex;gap:8px;align-items:center}
+h1{font-size:19px;margin:0;flex:1}
+.pill{border:0;background:var(--card);color:var(--tx);border-radius:999px;padding:7px 12px;font-weight:600}
+.wrap{padding:0 14px}
+input,select{width:100%;border:0;background:var(--card);color:var(--tx);border-radius:14px;padding:12px 14px;font-size:15px;outline:0}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:10px 0;scrollbar-width:none}
+.chip{flex:none;border:0;border-radius:999px;padding:8px 14px;background:var(--card);color:var(--tx);font-weight:600}
+.chip.on{background:var(--ac);color:var(--act)}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(min-width:640px){.grid{grid-template-columns:repeat(3,1fr)}}
+.car{background:var(--card);border-radius:18px;overflow:hidden;box-shadow:0 4px 14px #0003;cursor:pointer}
+.car img{width:100%;aspect-ratio:16/10;object-fit:cover;display:block;background:#2a3040}
+.car .b{padding:10px 12px 12px}.car b{display:block;font-size:14px}.car small{color:var(--hint)}
+.price{font-weight:800;color:var(--ac);margin-top:4px}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--card);padding:8px 8px calc(8px + env(safe-area-inset-bottom));gap:6px;z-index:6}
+nav button{flex:1;border:0;background:none;color:var(--hint);font-weight:600;padding:8px;border-radius:12px}
+nav button.on{color:var(--act);background:var(--ac)}
+.sheet{position:fixed;inset:0;background:var(--bg);z-index:10;overflow:auto;padding-bottom:100px}
+.gal{display:flex;overflow-x:auto;scroll-snap-type:x mandatory}
+.gal img{flex:none;width:100%;aspect-ratio:16/10;object-fit:cover;scroll-snap-align:center}
+.close{position:fixed;top:12px;left:12px;z-index:11;border:0;border-radius:50%;width:38px;height:38px;background:#000a;color:#fff;font-size:18px}
+.specs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}
+.specs div{background:var(--card);border-radius:14px;padding:10px 12px}.specs small{display:block;color:var(--hint)}
+.btn{display:block;width:100%;border:0;border-radius:14px;padding:14px;margin-top:8px;font-size:16px;font-weight:700;background:var(--ac);color:var(--act);text-align:center;text-decoration:none}
+.btn.alt{background:var(--card);color:var(--tx)}
+.row{display:flex;gap:8px;align-items:center;margin:10px 0}.row label{flex:1;color:var(--hint)}.row input{width:130px}
+.res{background:var(--card);border-radius:18px;padding:18px;text-align:center;margin-top:12px}.res h2{margin:6px 0;color:var(--ac);font-size:28px}
+.empty{text-align:center;color:var(--hint);padding:40px 0}
+</style>
+</head>
+<body>
+<header><h1 id="title">🚘</h1><button class="pill" id="lng"></button></header>
+<div class="wrap" id="app"></div>
+<nav id="nav"></nav>
+<div class="sheet" id="sheet" hidden></div>
+<script>
+const tg = window.Telegram?.WebApp; tg?.ready(); tg?.expand();
+const Q = new URLSearchParams(location.search);
+let lang = Q.get('lang') || localStorage.getItem('lang') || (tg?.initDataUnsafe?.user?.language_code === 'ru' ? 'ru' : 'uz');
+const I = {
+  uz: {cat:'Katalog',calc:'Kalkulyator',con:'Aloqa',search:'Mashina qidirish...',all:'Barchasi',nores:'Hech narsa topilmadi',
+       sort:['Saralash','Arzonlari avval','Qimmatlari avval','Yangilari avval'],year:'Yil',km:'Yurgan',fuel:'Yoqilg\'i',gear:'Karobka',eng:'Dvigatel',color:'Rang',
+       call:'📞 Qo\'ng\'iroq qilish',write:'💬 Menejerga yozish',price:'Narxi ($)',down:'Boshlang\'ich to\'lov (%)',months:'Muddat (oy)',rate:'Yillik foiz (%)',
+       month:'Oylik to\'lov',total:'Jami to\'lov',addr:'Manzil',hours:'Ish vaqti',about:'Biz haqimizda',lng:'RU'},
+  ru: {cat:'Каталог',calc:'Калькулятор',con:'Контакты',search:'Поиск авто...',all:'Все',nores:'Ничего не найдено',
+       sort:['Сортировка','Сначала дешёвые','Сначала дорогие','Сначала новые'],year:'Год',km:'Пробег',fuel:'Топливо',gear:'КПП',eng:'Двигатель',color:'Цвет',
+       call:'📞 Позвонить',write:'💬 Написать менеджеру',price:'Цена ($)',down:'Первый взнос (%)',months:'Срок (мес.)',rate:'Годовая ставка (%)',
+       month:'Ежемесячный платёж',total:'Общая сумма',addr:'Адрес',hours:'Время работы',about:'О нас',lng:'UZ'}
+};
+let DATA, S = {tab: Q.get('tab') === 'calc' ? 'calc' : 'cat', brand: '', q: '', sort: 0, price: 15000};
+const $ = s => document.querySelector(s), t = k => I[lang][k], fmt = n => Number(n).toLocaleString('en-US').replace(/,/g, ' ');
+
+async function init() {
+  DATA = await (await fetch('/api/data')).json();
+  document.title = DATA.shop.name; $('#title').textContent = '🚘 ' + DATA.shop.name;
+  $('#lng').onclick = () => { lang = lang === 'uz' ? 'ru' : 'uz'; localStorage.setItem('lang', lang); draw(); };
+  draw();
+  const id = +Q.get('car'); if (id) openCar(id);
+}
+
+function draw() {
+  $('#lng').textContent = '🌐 ' + t('lng');
+  $('#nav').innerHTML = [['cat','🚘'],['calc','🧮'],['con','📞']].map(([k,i]) =>
+    `<button class="${S.tab===k?'on':''}" onclick="S.tab='${k}';draw()">${i} ${t(k)}</button>`).join('');
+  $('#app').innerHTML = S.tab === 'cat' ? catalog() : S.tab === 'calc' ? calc() : contacts();
+  if (S.tab === 'calc') recalc();
+}
+
+function catalog() {
+  const brands = [...new Set(DATA.cars.map(c => c.brand))];
+  let list = DATA.cars.filter(c => (!S.brand || c.brand === S.brand) && (c.brand + ' ' + c.name).toLowerCase().includes(S.q.toLowerCase()));
+  const sorters = [null, (a,b)=>a.price-b.price, (a,b)=>b.price-a.price, (a,b)=>b.year-a.year];
+  if (sorters[S.sort]) list.sort(sorters[S.sort]);
+  return `<input id="q" placeholder="${t('search')}" value="${S.q}" oninput="S.q=this.value;redraw()">
+  <div class="chips">${['', ...brands].map(b => `<button class="chip ${S.brand===b?'on':''}" onclick="S.brand='${b}';draw()">${b||t('all')}</button>`).join('')}</div>
+  <select onchange="S.sort=+this.value;draw()" style="margin-bottom:12px">${t('sort').map((s,i)=>`<option value="${i}" ${S.sort===i?'selected':''}>${s}</option>`).join('')}</select>
+  <div class="grid" id="grid">${gridHtml(list)}</div>`;
+}
+const gridHtml = l => l.length ? l.map(c => `<div class="car" onclick="openCar(${c.id})"><img loading="lazy" src="${c.images[0]}" alt=""><div class="b"><b>${c.brand} ${c.name}</b><small>${c.year} · ${fmt(c.mileage)} km</small><div class="price">$${fmt(c.price)}</div></div></div>`).join('') : `<div class="empty" style="grid-column:1/-1">${t('nores')}</div>`;
+function redraw() { // faqat ro'yxatni yangilaydi (qidiruv maydoni fokusini yo'qotmaslik uchun)
+  const l = DATA.cars.filter(c => (!S.brand || c.brand === S.brand) && (c.brand+' '+c.name).toLowerCase().includes(S.q.toLowerCase()));
+  $('#grid').innerHTML = gridHtml(l);
+}
+
+function openCar(id) {
+  const c = DATA.cars.find(x => x.id === id), d = DATA.dict, sh = DATA.shop;
+  S.price = c.price;
+  $('#sheet').hidden = false;
+  $('#sheet').innerHTML = `<button class="close" onclick="closeCar()">✕</button>
+  <div class="gal">${c.images.map(s => `<img src="${s}" alt="">`).join('')}</div>
+  <div class="wrap"><h2 style="margin:14px 0 2px">${c.brand} ${c.name}</h2><div class="price" style="font-size:22px">$${fmt(c.price)}</div>
+  <div class="specs">
+    <div><small>${t('year')}</small>${c.year}</div><div><small>${t('km')}</small>${fmt(c.mileage)} km</div>
+    <div><small>${t('fuel')}</small>${d.fuel[c.fuel][lang]}</div><div><small>${t('gear')}</small>${d.gearbox[c.gearbox][lang]}</div>
+    <div><small>${t('eng')}</small>${c.engine}</div><div><small>${t('color')}</small>${c.color[lang]}</div></div>
+  <p style="color:var(--hint)">${c.desc[lang]}</p>
+  <a class="btn" href="tel:${sh.phone}">${t('call')}</a>
+  <button class="btn alt" onclick="openLink('https://t.me/${sh.manager}')">${t('write')}</button>
+  <button class="btn alt" onclick="closeCar();S.tab='calc';draw()">🧮 ${t('calc')}</button></div>`;
+  tg?.BackButton?.show(); tg?.BackButton?.onClick(closeCar);
+}
+function closeCar() { $('#sheet').hidden = true; tg?.BackButton?.hide(); }
+function openLink(u) { tg?.openTelegramLink ? tg.openTelegramLink(u) : window.open(u, '_blank'); }
+
+function calc() {
+  return `<div class="row"><label>${t('price')}</label><input id="cp" type="number" value="${S.price}" oninput="recalc()"></div>
+  <div class="row"><label>${t('down')}</label><input id="cd" type="number" value="30" oninput="recalc()"></div>
+  <div class="row"><label>${t('months')}</label><input id="cm" type="number" value="36" oninput="recalc()"></div>
+  <div class="row"><label>${t('rate')}</label><input id="cr" type="number" value="18" oninput="recalc()"></div>
+  <div class="res"><small>${t('month')}</small><h2 id="rm">–</h2><small>${t('total')}: <span id="rt">–</span></small></div>`;
+}
+function recalc() {
+  const P = +$('#cp').value, d = +$('#cd').value, n = +$('#cm').value, r = +$('#cr').value / 1200;
+  const loan = P * (1 - d / 100); if (!n || loan <= 0) return;
+  const m = r ? loan * r / (1 - Math.pow(1 + r, -n)) : loan / n;
+  $('#rm').textContent = '$' + fmt(Math.round(m)); $('#rt').textContent = '$' + fmt(Math.round(m * n + P * d / 100));
+}
+
+function contacts() {
+  const s = DATA.shop;
+  return `<div class="res" style="text-align:left"><b style="font-size:18px">${s.name}</b><p style="color:var(--hint)">${s.about[lang]}</p>
+  <p>📍 <b>${t('addr')}:</b> ${s.address[lang]}</p><p>🕘 <b>${t('hours')}:</b> ${s.hours[lang]}</p>
+  <a class="btn" href="tel:${s.phone}">${t('call')} ${s.phone}</a>
+  <button class="btn alt" onclick="openLink('https://t.me/${s.manager}')">${t('write')}</button>
+  <a class="btn alt" href="https://maps.google.com/?q=${s.lat},${s.lon}" target="_blank">📍 Google Maps</a></div>`;
+}
+init();
+</script>
+</body>
+</html>

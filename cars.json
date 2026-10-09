@@ -1,0 +1,53 @@
+{
+  "shop": {
+    "name": "AutoSalon Premium",
+    "phone": "+998901234567",
+    "manager": "your_manager_username",
+    "lat": 41.311081, "lon": 69.240562,
+    "address": {"uz": "Toshkent sh., Amir Temur ko'chasi 1", "ru": "г. Ташкент, ул. Амира Темура 1"},
+    "hours": {"uz": "Har kuni 09:00 – 19:00", "ru": "Ежедневно 09:00 – 19:00"},
+    "about": {
+      "uz": "Biz sifatli yangi va ishlatilgan avtomobillarni sotamiz. Barcha mashinalar tekshiruvdan o'tgan, kredit va almashtirish (trade-in) imkoniyati mavjud.",
+      "ru": "Мы продаём качественные новые и подержанные автомобили. Все машины проверены, доступны кредит и обмен (trade-in)."
+    }
+  },
+  "dict": {
+    "fuel": {
+      "petrol": {"uz": "Benzin", "ru": "Бензин"},
+      "gas": {"uz": "Metan/Propan", "ru": "Газ"},
+      "diesel": {"uz": "Dizel", "ru": "Дизель"},
+      "hybrid": {"uz": "Gibrid", "ru": "Гибрид"},
+      "electric": {"uz": "Elektr", "ru": "Электро"}
+    },
+    "gearbox": {
+      "auto": {"uz": "Avtomat", "ru": "Автомат"},
+      "manual": {"uz": "Mexanika", "ru": "Механика"}
+    }
+  },
+  "cars": [
+    {"id": 1, "brand": "Chevrolet", "name": "Gentra", "year": 2023, "price": 13500, "mileage": 15000, "fuel": "gas", "gearbox": "auto", "engine": "1.5L",
+     "color": {"uz": "Oq", "ru": "Белый"},
+     "desc": {"uz": "Toza holatda, bitta egasi, to'liq servis tarixi.", "ru": "Отличное состояние, один владелец, полная сервисная история."},
+     "images": ["https://placehold.co/800x500/png?text=Chevrolet+Gentra", "https://placehold.co/800x500/png?text=Gentra+Interior"]},
+    {"id": 2, "brand": "Chevrolet", "name": "Malibu 2", "year": 2022, "price": 24500, "mileage": 32000, "fuel": "petrol", "gearbox": "auto", "engine": "2.0T",
+     "color": {"uz": "Qora", "ru": "Чёрный"},
+     "desc": {"uz": "Turbo dvigatel, to'liq komplektatsiya, panorama tom.", "ru": "Турбо двигатель, полная комплектация, панорамная крыша."},
+     "images": ["https://placehold.co/800x500/png?text=Chevrolet+Malibu+2", "https://placehold.co/800x500/png?text=Malibu+Interior"]},
+    {"id": 3, "brand": "Kia", "name": "K5", "year": 2021, "price": 28900, "mileage": 41000, "fuel": "petrol", "gearbox": "auto", "engine": "2.0L",
+     "color": {"uz": "Kulrang", "ru": "Серый"},
+     "desc": {"uz": "Sport dizayn, qizdirilgan o'rindiqlar, kamera 360°.", "ru": "Спортивный дизайн, подогрев сидений, камера 360°."},
+     "images": ["https://placehold.co/800x500/png?text=Kia+K5", "https://placehold.co/800x500/png?text=K5+Interior"]},
+    {"id": 4, "brand": "Hyundai", "name": "Sonata", "year": 2020, "price": 21000, "mileage": 58000, "fuel": "gas", "gearbox": "auto", "engine": "2.0L",
+     "color": {"uz": "Kumush", "ru": "Серебристый"},
+     "desc": {"uz": "Iqtisodiy va qulay, hujjatlari toza.", "ru": "Экономичная и удобная, документы чистые."},
+     "images": ["https://placehold.co/800x500/png?text=Hyundai+Sonata", "https://placehold.co/800x500/png?text=Sonata+Interior"]},
+    {"id": 5, "brand": "BYD", "name": "Han EV", "year": 2023, "price": 38500, "mileage": 9000, "fuel": "electric", "gearbox": "auto", "engine": "Dual Motor",
+     "color": {"uz": "Ko'k", "ru": "Синий"},
+     "desc": {"uz": "Zaryadda 600 km gacha yuradi, tez zaryadlash.", "ru": "Запас хода до 600 км, быстрая зарядка."},
+     "images": ["https://placehold.co/800x500/png?text=BYD+Han+EV", "https://placehold.co/800x500/png?text=Han+Interior"]},
+    {"id": 6, "brand": "Toyota", "name": "Camry 70", "year": 2019, "price": 33000, "mileage": 70000, "fuel": "petrol", "gearbox": "auto", "engine": "2.5L",
+     "color": {"uz": "Oq", "ru": "Белый"},
+     "desc": {"uz": "Ishonchli va qulay sedan, original bo'yoq.", "ru": "Надёжный и комфортный седан, оригинальная краска."},
+     "images": ["https://placehold.co/800x500/png?text=Toyota+Camry", "https://placehold.co/800x500/png?text=Camry+Interior"]}
+  ]
+}
